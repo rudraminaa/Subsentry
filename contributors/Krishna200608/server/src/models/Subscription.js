@@ -1,15 +1,20 @@
 import mongoose from "mongoose";
+import {
+  BILLING_CYCLES,
+  SUBSCRIPTION_SOURCES,
+  DEFAULT_CURRENCY,
+} from "../constants/subscription.constants.js";
 
 const subscriptionSchema = new mongoose.Schema(
   {
-    // Ownership:who thiss Subscription belongs to...
+    // Ownership
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       index: true,
     },
 
-    // Human-readable subscription name (e.g., Netflix,Spotify, Facebook, etcc..)
+    // Subscription name
     name: {
       type: String,
       required: true,
@@ -24,13 +29,13 @@ const subscriptionSchema = new mongoose.Schema(
     },
     currency: {
       type: String,
-      default: "USD",
+      default: DEFAULT_CURRENCY,
       uppercase: true,
     },
     billingCycle: {
       type: String,
       required: true,
-      enum: ["monthly", "yearly", "weekly", "custom"],
+      enum: Object.values(BILLING_CYCLES),
       lowercase: true,
     },
 
@@ -52,11 +57,11 @@ const subscriptionSchema = new mongoose.Schema(
     // Source of subscription data
     source: {
       type: String,
-      default: "manual",
+      default: SUBSCRIPTION_SOURCES.MANUAL,
       lowercase: true,
     },
 
-    // Logical status (kept minimal)
+    // Status
     isActive: {
       type: Boolean,
       default: true,
