@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import { categoryValues, sourceValues, statusValues } from "../constants/subscription";
+import { billingCycle } from "../constants/billing";
 
 const subscriptionSchema = new mongoose.Schema({
     userId: {
@@ -12,13 +14,18 @@ const subscriptionSchema = new mongoose.Schema({
     },
     billingCycle: {
         type: String,
-        enum: ["monthly", "yearly"],
+        enum: billingCycle,
         required: true,
     },
     price: {
         type: Number,
         required: true,
         min: 0,
+    },
+    category: {
+      type: String,
+      enum: categoryValues,
+      default: "Other",
     },
     renewalDate: {
       type: Date,
@@ -33,12 +40,12 @@ const subscriptionSchema = new mongoose.Schema({
     },
     source: {
       type: String,
-      enum: ["manual", "gmail"],
+      enum: sourceValues,
       default: "manual",
     },
     status: {
       type: String,
-      enum: ["active", "cancelled", "expired"],
+      enum: statusValues,
       default: "active",
     },
 },{
