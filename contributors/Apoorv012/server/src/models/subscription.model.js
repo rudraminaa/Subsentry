@@ -9,6 +9,11 @@ const subscriptionSchema = new Schema(
       index: true,
     },
 
+    amount: {
+      type: Number,
+      required: true,
+    },
+
     billingCycle: {
       type: String,
       enum: ["monthly", "yearly"],
@@ -25,7 +30,9 @@ const subscriptionSchema = new Schema(
       default: false,
     },
 
-    trialEndsAt: Date,
+    trialEndsAt: {
+      type: Date,
+    },
 
     source: {
       type: String,
