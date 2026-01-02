@@ -2,15 +2,20 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import connectDB from './DB/connect.js';
+
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+import SubscriptionRoute from './Routes/subscription.route.js'
+
+app.use('/api/subscription',SubscriptionRoute)
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK' });
 });
+
 
 
 connectDB()
@@ -22,3 +27,4 @@ connectDB()
     .catch((err) => {
         console.log("MONGO db connection failed!!!", err);
     })
+
