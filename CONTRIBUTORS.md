@@ -190,3 +190,8 @@ This project exists because of your time, effort, and curiosity.
 - **Name:** Himansh Arora
 - **GitHub:** https://github.com/Humanshere 
 - **About:** IT-BI Second year at IIITA
+
+- **Name:** Yogesh M
+- **GitHub** https://github.com/yogesh4216
+- **About** Computer Science–focused student passionate about AI, software development, and building impactful real world projects.
+
