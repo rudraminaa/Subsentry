@@ -1,22 +1,10 @@
-// contributors/ishanrajsingh/server/src/routes/subscriptionRoutes.js
-
 const express = require('express');
 const router = express.Router();
+const { createSubscription, getSubscriptions } = require('../controllers/subscriptionController');
+const { createSubscriptionSchema } = require('../validators/subscriptionValidators');
+const validateSubscriptionRequest = require('../middlewares/validateSubscriptionRequest');
 
-const {
-  createSubscription,
-  getSubscriptions,
-} = require('../controllers/subscriptionController');
-
-// IMPORTANT: Use existing auth middleware from the base project
-const { protect } = require('../middleware/auth');
-
-// All subscription routes require authentication
-router.use(protect);
-
-router
-  .route('/')
-  .post(createSubscription)   // POST /api/subscriptions
-  .get(getSubscriptions);     // GET /api/subscriptions
+router.post('/', validateSubscriptionRequest(createSubscriptionSchema), createSubscription);
+router.get('/', getSubscriptions);
 
 module.exports = router;
