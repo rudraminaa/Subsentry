@@ -18,136 +18,10 @@ import {
   SortField,
   SortOrder,
 } from '../components/subscriptions';
-import { Subscription } from '@/lib/api';
+import { Subscription, getSubscriptions } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ShimmerButton } from '@/components/ui/aceternity';
-
-// Mock data for demonstration (will be replaced with real API call)
-const mockSubscriptions: Subscription[] = [
-  {
-    _id: '1',
-    userId: 'user1',
-    name: 'Netflix',
-    amount: 15.99,
-    currency: 'USD',
-    billingCycle: 'monthly',
-    category: 'entertainment',
-    renewalDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days
-    isTrial: false,
-    source: 'manual',
-    status: 'active',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    _id: '2',
-    userId: 'user1',
-    name: 'Spotify Premium',
-    amount: 9.99,
-    currency: 'USD',
-    billingCycle: 'monthly',
-    category: 'music',
-    renewalDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(), // 10 days
-    isTrial: false,
-    source: 'gmail',
-    status: 'active',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    _id: '3',
-    userId: 'user1',
-    name: 'Adobe Creative Cloud',
-    amount: 54.99,
-    currency: 'USD',
-    billingCycle: 'monthly',
-    category: 'productivity',
-    renewalDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString(), // 15 days
-    isTrial: false,
-    source: 'manual',
-    status: 'active',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    _id: '4',
-    userId: 'user1',
-    name: 'ChatGPT Plus',
-    amount: 20.00,
-    currency: 'USD',
-    billingCycle: 'monthly',
-    category: 'productivity',
-    renewalDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day - urgent!
-    isTrial: true,
-    trialEndsAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-    source: 'manual',
-    status: 'active',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    _id: '5',
-    userId: 'user1',
-    name: 'GitHub Copilot',
-    amount: 10.00,
-    currency: 'USD',
-    billingCycle: 'monthly',
-    category: 'productivity',
-    renewalDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000).toISOString(), // 20 days
-    isTrial: false,
-    source: 'imported',
-    status: 'active',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    _id: '6',
-    userId: 'user1',
-    name: 'Notion',
-    amount: 8.00,
-    currency: 'USD',
-    billingCycle: 'monthly',
-    category: 'productivity',
-    renewalDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000).toISOString(), // 25 days
-    isTrial: false,
-    source: 'manual',
-    status: 'paused',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    _id: '7',
-    userId: 'user1',
-    name: 'Disney+',
-    amount: 7.99,
-    currency: 'USD',
-    billingCycle: 'monthly',
-    category: 'entertainment',
-    renewalDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000).toISOString(), // 12 days
-    isTrial: false,
-    source: 'gmail',
-    status: 'active',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    _id: '8',
-    userId: 'user1',
-    name: 'Coursera Plus',
-    amount: 59.00,
-    currency: 'USD',
-    billingCycle: 'yearly',
-    category: 'education',
-    renewalDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(), // 60 days
-    isTrial: true,
-    trialEndsAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days
-    source: 'manual',
-    status: 'active',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
 
 export default function SubscriptionsPage() {
   const { getToken } = useAuth();
@@ -167,21 +41,21 @@ export default function SubscriptionsPage() {
   const [sortField, setSortField] = useState<SortField>('renewalDate');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
 
-  // Fetch subscriptions
+  // Fetch subscriptions from real API
   useEffect(() => {
     const fetchSubscriptions = async () => {
       try {
         setIsLoading(true);
-        // In production, use the API:
-        // const token = await getToken();
-        // const data = await getSubscriptions(token!);
-        // setSubscriptions(data.subscriptions);
-        
-        // For demo, use mock data:
-        await new Promise(resolve => setTimeout(resolve, 800)); // Simulate loading
-        setSubscriptions(mockSubscriptions);
+        setError(null);
+        const token = await getToken();
+        if (!token) {
+          setError('Authentication required');
+          return;
+        }
+        const data = await getSubscriptions(token);
+        setSubscriptions(data.subscriptions || []);
       } catch (err) {
-        setError('Failed to load subscriptions');
+        setError('Failed to load subscriptions. Make sure the server is running.');
         console.error(err);
       } finally {
         setIsLoading(false);
@@ -243,10 +117,22 @@ export default function SubscriptionsPage() {
   };
 
   const handleRefresh = async () => {
-    setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
-    setSubscriptions(mockSubscriptions);
-    setIsLoading(false);
+    try {
+      setIsLoading(true);
+      setError(null);
+      const token = await getToken();
+      if (!token) {
+        setError('Authentication required');
+        return;
+      }
+      const data = await getSubscriptions(token);
+      setSubscriptions(data.subscriptions || []);
+    } catch (err) {
+      setError('Failed to refresh subscriptions');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
